@@ -29,6 +29,8 @@
   --sans:'Instrument Sans',-apple-system,'PingFang SC','Hiragino Sans GB',system-ui,sans-serif;
   --serif:'Newsreader','Songti SC',Georgia,serif;
   --r-lg:26px; --r-md:16px;
+  --hero-en-compact-size:28px; --hero-en-narrow-size:24px;
+  --hero-en-compact-action-gap:16px; --hero-en-narrow-action-gap:8px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;overflow-x:hidden}
@@ -119,6 +121,14 @@ nav:not(.scrolled) .btn-ink{background:var(--dark-tx);color:#161613}
   .days{top:auto;bottom:calc(clamp(30px,5vh,54px) + 218px);transform:none;flex-direction:row;gap:4px;right:clamp(22px,3.6vw,52px);left:clamp(22px,3.6vw,52px)}
   .dchip{padding:8px 12px 8px 10px}
   .dchip i{font-size:12.5px}
+}
+@media (max-width:500px){
+  html[data-lang="en"] .sky-body h1 .hl{font-size:var(--hero-en-compact-size)}
+  html[data-lang="en"] .sky-body .ccta{margin-top:var(--hero-en-compact-action-gap)}
+}
+@media (max-width:350px){
+  html[data-lang="en"] .sky-body h1 .hl{font-size:var(--hero-en-narrow-size)}
+  html[data-lang="en"] .sky-body .ccta{margin-top:var(--hero-en-narrow-action-gap)}
 }
 
 /* ═══ 通用 ═══ */
