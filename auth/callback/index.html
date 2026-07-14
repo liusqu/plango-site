@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Plango 登录 · Sign in</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap');
+  /* v4 提案书语言 — tokens 与 docs/design/td-redesign-v4/v4-proposal-axb.html 同源，零新 HEX */
+  :root {
+    color-scheme: light;
+    --bg:#FAF8F3; --card:#FFFDF8;
+    --ink:#1C1A17;
+    --ink-soft:rgba(28,26,23,.64); --ink-muted:rgba(28,26,23,.44);
+    --hair:rgba(28,26,23,.11);
+    --accent:#C2603F; --clay:#B23A2E;
+    --serif:'Playfair Display','Noto Serif SC','Songti SC','STSong',Georgia,serif;
+    --sans:'Nunito',-apple-system,'PingFang SC','Hiragino Sans GB',system-ui,sans-serif;
+    --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 28px; }
+  .page { max-width: 360px; width: 100%; text-align: left; }
+  .kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 2.2px; color: var(--ink-muted); text-transform: uppercase; }
+  h1 { font-family: var(--serif); font-size: 27px; line-height: 1.35; font-weight: 700; letter-spacing: .5px; margin-top: 14px; }
+  p { font-size: 14px; line-height: 1.75; color: var(--ink-soft); margin-top: 12px; }
+  .cta { display: flex; align-items: center; justify-content: center; height: 52px; margin-top: 28px; border-radius: 14px; background: var(--ink); color: var(--card); font-size: 15px; font-weight: 700; letter-spacing: .3px; text-decoration: none; transition: transform .2s cubic-bezier(.4,0,.2,1), opacity .2s cubic-bezier(.4,0,.2,1); }
+  .cta:active { transform: scale(.98); opacity: .9; }
+  .cta:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
+  .cta-sub { text-align: center; font-size: 11.5px; color: var(--ink-muted); margin-top: 9px; line-height: 1.7; }
+  .status-line { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--hair); display: flex; align-items: baseline; gap: 8px; }
+  .status-line .dot { width: 7px; height: 7px; border-radius: 99px; background: var(--clay); align-self: center; flex: none; }
+  .status-line .s-main { font-size: 14.5px; font-weight: 600; }
+  .err-detail { font-size: 12.5px; color: var(--ink-muted); margin-top: 8px; line-height: 1.7; }
+  .hidden { display: none; }
+  @media (prefers-reduced-motion: reduce) { .cta { transition: none; } }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <img src="/assets/plango-logo.png" alt="Plango" width="40" height="40" style="border-radius:10px;display:block;">
+      <div class="kicker">Plango</div>
+    </div>
+
+    <div id="state-ok" class="hidden">
+      <h1 id="ok-title">邮箱验证成功</h1>
+      <p id="ok-sub">Verified — one tap to finish.</p>
+      <a id="open-app" class="cta" href="#">打开 Plango 完成登录</a>
+      <div class="cta-sub" id="device-hint">Open Plango to sign in</div>
+    </div>
+
+    <div id="state-error" class="hidden">
+      <h1 id="err-title">链接已失效</h1>
+      <p id="err-sub">登录链接已过期或已被使用。请回到 Plango App 重新发送一封登录邮件。</p>
+      <p id="err-sub2">This sign-in link has expired or was already used. Please go back to the Plango app and request a new email.</p>
+      <div class="status-line"><span class="dot"></span><span class="s-main" id="err-status">需要重新发一封</span></div>
+      <div class="err-detail" id="error-detail"></div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  var search = window.location.search || "";
+  var hash = window.location.hash || "";
+  var qs = new URLSearchParams(search);
+  var hs = new URLSearchParams(hash.replace(/^#/, ""));
+
+  var lang = "zh";
+  try { lang = localStorage.getItem("plango.auth.lang") || "zh"; } catch (e) {}
+  if (lang === "en") {
+    document.documentElement.lang = "en";
+    document.getElementById("ok-title").textContent = "Email verified";
+    document.getElementById("ok-sub").textContent = "验证成功——点一下完成登录。";
+    document.getElementById("open-app").textContent = "Open Plango to sign in";
+    document.getElementById("device-hint").textContent = "打开 Plango 完成登录";
+    document.getElementById("err-title").textContent = "Link expired";
+    var zhBody = document.getElementById("err-sub").textContent;
+    document.getElementById("err-sub").textContent = document.getElementById("err-sub2").textContent;
+    document.getElementById("err-sub2").textContent = zhBody;
+    document.getElementById("err-status").textContent = "Request a new email";
+  }
+
+  var errDesc = hs.get("error_description") || qs.get("error_description");
+  var errCode = hs.get("error_code") || qs.get("error_code") || hs.get("error") || qs.get("error");
+  var hasAuth = qs.get("code") || hs.get("access_token") || hs.get("refresh_token");
+
+  var ok = document.getElementById("state-ok");
+  var bad = document.getElementById("state-error");
+
+  if (hasAuth && !errCode) {
+    ok.classList.remove("hidden");
+    var target = "plango://auth/callback" + search + hash;
+    document.getElementById("open-app").setAttribute("href", target);
+
+    var isiOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!isiOS) {
+      document.getElementById("device-hint").textContent = (lang === "en")
+        ? "Open this email on the iPhone that has Plango installed · 请在安装了 Plango 的 iPhone 上打开这封邮件"
+        : "请在安装了 Plango 的 iPhone 上打开这封邮件 · Open this email on the iPhone that has Plango installed.";
+    } else {
+      // One automatic attempt — Safari asks "Open in Plango?".
+      // In-app browsers may ignore it; the button above is the fallback.
+      setTimeout(function () { window.location.href = target; }, 400);
+    }
+  } else {
+    bad.classList.remove("hidden");
+    if (errDesc) {
+      document.getElementById("error-detail").textContent =
+        "(" + errDesc.replace(/\+/g, " ") + ")";
+    }
+  }
+})();
+</script>
+</body>
+</html>

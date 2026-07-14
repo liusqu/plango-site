@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "XBX2T823BN.app.plango",
+        "appIDs": ["XBX2T823BN.app.plango"],
+        "paths": ["/auth/*"],
+        "components": [{ "/": "/auth/*" }]
+      }
+    ]
+  }
+}

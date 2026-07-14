@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Plango 登录 · Sign in</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap');
+  /* v4 提案书语言 — tokens 与 docs/design/td-redesign-v4/v4-proposal-axb.html 同源，零新 HEX */
+  :root {
+    color-scheme: light;
+    --bg:#FAF8F3; --card:#FFFDF8;
+    --ink:#1C1A17;
+    --ink-soft:rgba(28,26,23,.64); --ink-muted:rgba(28,26,23,.44);
+    --hair:rgba(28,26,23,.11);
+    --accent:#C2603F; --clay:#B23A2E;
+    --serif:'Playfair Display','Noto Serif SC','Songti SC','STSong',Georgia,serif;
+    --sans:'Nunito',-apple-system,'PingFang SC','Hiragino Sans GB',system-ui,sans-serif;
+    --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--ink); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 32px 28px; }
+  .page { max-width: 360px; width: 100%; text-align: left; }
+  .kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 2.2px; color: var(--ink-muted); text-transform: uppercase; }
+  h1 { font-family: var(--serif); font-size: 27px; line-height: 1.35; font-weight: 700; letter-spacing: .5px; margin-top: 14px; }
+  p { font-size: 14px; line-height: 1.75; color: var(--ink-soft); margin-top: 12px; }
+  .status-line { margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--hair); display: flex; align-items: baseline; gap: 8px; }
+  .status-line .dot { width: 7px; height: 7px; border-radius: 99px; background: var(--clay); align-self: center; flex: none; }
+  .status-line .s-main { font-size: 14.5px; font-weight: 600; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+  <div class="page">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <img src="/assets/plango-logo.png" alt="Plango" width="40" height="40" style="border-radius:10px;display:block;">
+      <div class="kicker">Plango</div>
+    </div>
+
+    <div id="state-verifying">
+      <h1 id="v-title">正在验证……</h1>
+      <p id="v-sub">Verifying your sign-in link…</p>
+    </div>
+
+    <div id="state-error" class="hidden">
+      <h1 id="e-title">链接不完整</h1>
+      <p id="e-sub">这个链接缺少验证信息。请回到 Plango App 重新发送一封登录邮件，或直接在 App 里输入邮件中的 6 位验证码。</p>
+      <p id="e-sub2">This link is missing its verification token. Please request a new email from the Plango app, or enter the 6-digit code from the email instead.</p>
+      <div class="status-line"><span class="dot"></span><span class="s-main" id="e-status">需要重新发一封</span></div>
+    </div>
+  </div>
+
+<script>
+(function () {
+  // Browser fallback for the auth universal link. When Plango is installed,
+  // iOS opens the app directly and this page never renders. Here we forward
+  // the one-time token to Supabase, which redirects to /auth/callback/.
+  var qs = new URLSearchParams(window.location.search || "");
+  var tokenHash = qs.get("token_hash");
+  var type = qs.get("type");
+  var lang = qs.get("lang") === "zh" ? "zh" : "en";
+
+  if (lang === "en") {
+    document.documentElement.lang = "en";
+    document.getElementById("v-title").textContent = "Verifying…";
+    document.getElementById("v-sub").textContent = "正在验证你的登录链接……";
+    document.getElementById("e-title").textContent = "Link incomplete";
+    var zh2 = document.getElementById("e-sub").textContent;
+    document.getElementById("e-sub").textContent = document.getElementById("e-sub2").textContent;
+    document.getElementById("e-sub2").textContent = zh2;
+    document.getElementById("e-status").textContent = "Request a new email";
+  }
+
+  var allowedTypes = { magiclink:1, signup:1, recovery:1, email_change:1, invite:1 };
+  if (!tokenHash || !allowedTypes[type]) {
+    document.getElementById("state-verifying").classList.add("hidden");
+    document.getElementById("state-error").classList.remove("hidden");
+    return;
+  }
+
+  try { localStorage.setItem("plango.auth.lang", lang); } catch (e) {}
+
+  window.location.replace(
+    "https://bztxplgohufsnyxtofev.supabase.co/auth/v1/verify" +
+    "?token=" + encodeURIComponent(tokenHash) +
+    "&type=" + encodeURIComponent(type) +
+    "&redirect_to=" + encodeURIComponent("https://plango.one/auth/callback/")
+  );
+})();
+</script>
+</body>
+</html>
