@@ -37,6 +37,7 @@
   --r-lg:26px; --r-md:16px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+html{overflow-x:clip}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;overflow-x:hidden}
 ::selection{background:var(--accent);color:#fff}
 img{display:block;max-width:100%}
@@ -408,7 +409,7 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
       </div>
     </div>
     <div class="s2p-out">
-      <span class="sp-src"><span class="zh">Plango 还给你的 · 七个里先看六个</span><span class="en">What you get back · six of the seven, below</span></span>
+      <span class="sp-src"><span class="zh">Plango 还给你的 · 七个，一个不少</span><span class="en">What you get back · all seven, below</span></span>
       <div class="poi-grid">
         <div class="poi-shot" data-poi>
           <img class="zh" src="assets/poi-card-lofoten-henningsvaer-zh.png" alt="Henningsvær · Plango POI"><img class="en" src="assets/poi-card-lofoten-henningsvaer-en.png" alt="Henningsvær · Plango POI">
@@ -433,6 +434,10 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
         <div class="poi-shot" data-poi>
           <img class="zh" src="assets/poi-card-lofoten-reinehalden-zh.png" alt="Reinehalden · Plango POI"><img class="en" src="assets/poi-card-lofoten-kvalvika-beach-en.png" alt="Kvalvika Beach · Plango POI">
           <div class="ps-cap"><span><b><span class="zh">Reinehalden</span><span class="en">Kvalvika Beach</span></b></span><span><span class="zh">帖里停车的门道</span><span class="en">The hike-in beach</span></span></div>
+        </div>
+        <div class="poi-shot" data-poi>
+          <img class="zh" src="assets/poi-card-lofoten-svolvaer-zh.png" alt="Svolvær · Plango POI"><img class="en" src="assets/poi-card-lofoten-svolvaer-en.png" alt="Svolvær · Plango POI">
+          <div class="ps-cap"><span><b>Svolvær</b></span><span><span class="zh">帖里的"山羊岩"</span><span class="en">The gateway town</span></span></div>
         </div>
       </div>
     </div>
@@ -848,7 +853,7 @@ mm.add({desktop:"(min-width: 881px)",mobile:"(max-width: 880px)",reduce:"(prefer
      scrub 跟手可倒放（倒滑时卡片飞回网格原位）；行落定后永不消失。 */
   gsap.set('.rf-time .t-old',{yPercent:0,autoAlpha:1});
   gsap.set('.rf-time .t-new',{yPercent:100,autoAlpha:0});
-  const collCards=gsap.utils.toArray('.poi-shot').slice(0,6);
+  const collCards=gsap.utils.toArray('.poi-shot').slice(0,7);
   collCards.forEach(c=>{c.style.position='relative';c.style.zIndex='30';c.style.willChange='transform'});
   const dRect=el=>{const r=el.getBoundingClientRect();return{x:r.left+window.scrollX,y:r.top+window.scrollY,w:r.width,h:r.height}};
   const tgt=()=>{const r=dRect(document.getElementById('walk'));return{x:r.x+r.w/2,y:r.y+96}};
@@ -879,7 +884,7 @@ mm.add({desktop:"(min-width: 881px)",mobile:"(max-width: 880px)",reduce:"(prefer
       const pos=k*0.42;                                    /* 拉开时间错峰：同屏最多两张在飞 */
       drop.fromTo(g,
           {opacity:0,scale:0.88,rotation:k%2?4:-4,
-           x:()=>{const t=dRect(document.getElementById('walk'));return t.x+t.w*(0.06+0.3*(k%3))},
+           x:()=>{const t=dRect(document.getElementById('walk'));const cw=innerWidth*0.56;return Math.min(t.x+t.w*(0.06+0.3*(k%3)),innerWidth-cw-10)}, /* 夹紧出生点：卡不出视口（曾撑出 85px 横滚） */
            y:()=>{const t=dRect(document.getElementById('walk'));return t.y-innerHeight*(0.52+0.1*(k%2))}},
           {opacity:1,duration:0.06,ease:"none"},pos)
         .to(g,{y:()=>tgt().y,duration:0.5,ease:"power2.in"},pos)
