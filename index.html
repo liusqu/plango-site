@@ -17,6 +17,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,600&family=Newsreader:opsz,wght@6..72,400;6..72,500&display=swap');
+/* app 界面字体（td-redesign-v4 设计语言）——凡模拟 app 界面的卡片使用 */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap');
 
 :root{
   --bg:#F0EEE6; --surface:#FAF9F5; --surface-2:#E7E4D9;
@@ -28,9 +30,11 @@
   --dark:#141413; --dark-2:#1F1E1B; --dark-tx:#F0EEE6; --dark-muted:rgba(240,238,230,.6); --dark-line:rgba(240,238,230,.12);
   --sans:'Instrument Sans',-apple-system,'PingFang SC','Hiragino Sans GB',system-ui,sans-serif;
   --serif:'Newsreader','Songti SC',Georgia,serif;
+  --app-serif:'Playfair Display','Noto Serif SC','Songti SC','STSong',Georgia,serif;
+  --app-sans:'Nunito',-apple-system,'PingFang SC','Hiragino Sans GB',system-ui,sans-serif;
+  --app-mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --app-card:#FFFDF8;
   --r-lg:26px; --r-md:16px;
-  --hero-en-compact-size:28px; --hero-en-narrow-size:24px;
-  --hero-en-compact-action-gap:16px; --hero-en-narrow-action-gap:8px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
 body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.7;overflow-x:hidden}
@@ -114,21 +118,16 @@ nav:not(.scrolled){color:var(--dark-tx)}
 nav:not(.scrolled) .links{color:rgba(240,238,230,.85)}
 nav:not(.scrolled) .links a:hover{background:rgba(240,238,230,.12);color:#fff}
 nav:not(.scrolled) .btn-ink{background:var(--dark-tx);color:#161613}
+.nav-right{display:flex;align-items:center;gap:12px}
+nav:not(.scrolled) .lang-btn{color:rgba(240,238,230,.9);border-color:rgba(240,238,230,.4)}
+nav:not(.scrolled) .lang-btn:hover{border-color:#fff;color:#fff}
 @media (max-width:880px){
   .sky-stats{display:none}
   .sky-body{max-width:none;right:clamp(22px,3.6vw,52px)}
   .sky-body h1 .hl{font-size:clamp(38px,10.5vw,52px)}
-  .days{top:auto;bottom:calc(clamp(30px,5vh,54px) + 218px);transform:none;flex-direction:row;gap:4px;right:clamp(22px,3.6vw,52px);left:clamp(22px,3.6vw,52px)}
+  .days{top:80px;bottom:auto;transform:none;flex-direction:row;gap:4px;right:clamp(22px,3.6vw,52px);left:clamp(22px,3.6vw,52px)} /* 贴顶横排，避开双语言标题区（EN 大写标题更高，曾与中置横排相撞） */
   .dchip{padding:8px 12px 8px 10px}
   .dchip i{font-size:12.5px}
-}
-@media (max-width:500px){
-  html[data-lang="en"] .sky-body h1 .hl{font-size:var(--hero-en-compact-size)}
-  html[data-lang="en"] .sky-body .ccta{margin-top:var(--hero-en-compact-action-gap)}
-}
-@media (max-width:350px){
-  html[data-lang="en"] .sky-body h1 .hl{font-size:var(--hero-en-narrow-size)}
-  html[data-lang="en"] .sky-body .ccta{margin-top:var(--hero-en-narrow-action-gap)}
 }
 
 /* ═══ 通用 ═══ */
@@ -147,6 +146,8 @@ section{position:relative}
 .shot-prop{position:relative;background:#fff;border:1px solid var(--line);border-radius:22px;overflow:hidden;
   box-shadow:0 34px 78px rgba(20,18,10,.16);max-width:400px;justify-self:end;width:100%}
 @media (max-width:900px){.s2p-left{justify-self:center!important}}
+.s2p-left{max-width:330px}
+html[data-lang="zh"] .s2p-left{max-width:600px} /* zh 输入图是折叠屏宽截图 */
 .shot-prop .sp-img{width:100%}
 .sp-src{display:inline-flex;margin-bottom:10px;font-size:12px;font-weight:700;background:var(--surface-2);border:1px solid var(--line);
   color:var(--ink-2);border-radius:99px;padding:6px 14px}
@@ -179,6 +180,7 @@ section{position:relative}
 .fact{display:grid;grid-template-columns:104px 1fr;gap:clamp(18px,2.5vw,28px);align-items:baseline;padding:22px 0;border-top:1.5px solid var(--line)}
 .fact:last-child{border-bottom:1.5px solid var(--line)}
 .fact .fn{font-size:clamp(24px,2.4vw,30px);font-weight:700;letter-spacing:-.02em;color:var(--accent-deep);font-variant-numeric:tabular-nums;white-space:nowrap}
+.facts.plain .fact{grid-template-columns:1fr}
 .fact .ft{font-size:17.5px;font-weight:700;letter-spacing:-.015em}
 .fact .fs{font-size:15px;font-weight:500;line-height:1.7;color:var(--muted);margin-top:4px;max-width:42ch}
 .feature .visual{flex:1;min-width:0;display:flex;justify-content:center}
@@ -188,28 +190,32 @@ section{position:relative}
 .device-full .screen{width:100%;height:100%;border-radius:clamp(31px,3.1vw,41px);overflow:hidden;background:var(--bg)}
 .device-full img{width:100%;height:100%;object-fit:cover;object-position:top}
 
-/* ═══ 替你先走一遍：Day 时间轴（你给的 + Plango 补的） ═══ */
-.reflow{width:min(92vw,530px);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);
-  box-shadow:0 36px 84px rgba(20,18,10,.15);padding:24px 26px;position:relative}
+/* ═══ 替你先走一遍：Day 时间轴（你给的 + Plango 补的）——用 app 设计语言（td-redesign-v4 字体） ═══ */
+.plan-stack{display:flex;flex-direction:column;gap:20px;align-items:stretch;width:min(92vw,530px)}
+.plan-stack .reflow{width:100%}
+.reflow{width:min(92vw,530px);background:var(--app-card);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:0 36px 84px rgba(20,18,10,.15);padding:24px 26px;position:relative;font-family:var(--app-sans)}
+.reflow.slim{padding:20px 26px;box-shadow:0 22px 54px rgba(20,18,10,.10)}
+.reflow.slim .wk-row{padding:10px 10px;margin-top:6px}
 .rf-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--line-soft)}
-.rf-head .rt-l{display:flex;align-items:center;gap:10px;font-size:15.5px;font-weight:700}
+.rf-head .rt-l{display:flex;align-items:center;gap:10px;font-family:var(--app-serif);font-size:17px;font-weight:600;letter-spacing:.01em}
 .rf-head .rt-l .ic{color:var(--muted);font-size:17px}
 .rf-badge{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--ok);
   border:1.5px solid rgba(61,122,80,.32);border-radius:99px;padding:5px 12px;background:rgba(61,122,80,.06)}
 .wk-row{display:flex;align-items:flex-start;gap:13px;padding:13px 10px;margin-top:8px;border-radius:13px}
-.wk-row .wt{font-size:14.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;width:50px;flex-shrink:0;padding-top:1px}
+.wk-row .wt{font-family:var(--app-mono);font-size:13px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap;width:50px;flex-shrink:0;padding-top:3px}
 .wk-row .wk-bd{min-width:0;flex:1}
 .wk-row .rn{font-size:15px;font-weight:700;letter-spacing:-.01em}
 .wk-row .rsub{font-size:13px;font-weight:500;color:var(--muted);margin-top:1px}
 .wk-row.given{border:1px solid var(--line-soft);background:var(--bg)}
 .wk-row.added{background:var(--accent-soft);border:1px solid rgba(196,89,47,.18)}
 .wk-row.added .wt{color:var(--accent-deep)}
-.wk-tag{font-size:10.5px;font-weight:700;letter-spacing:.05em;color:var(--accent-deep);border:1px solid rgba(196,89,47,.34);
+.wk-tag{font-family:var(--app-mono);font-size:10px;font-weight:500;letter-spacing:.06em;color:var(--accent-deep);border:1px solid rgba(196,89,47,.34);
   border-radius:99px;padding:3px 9px;white-space:nowrap;margin-top:2px}
 .rf-alert{margin:14px 0 0;display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);
   border-radius:13px;padding:13px 16px;font-size:13.5px;font-weight:700}
 .rf-alert .ic{color:#F0B429;font-size:15px}
-.rf-alert .rr{margin-left:auto;font-variant-numeric:tabular-nums;opacity:.8;font-weight:600;font-size:12.5px}
+.rf-alert .rr{margin-left:auto;font-family:var(--app-mono);font-variant-numeric:tabular-nums;opacity:.8;font-weight:500;font-size:12px}
 .rf-time{position:relative;display:inline-block;width:44px;height:22px;overflow:hidden;font-variant-numeric:tabular-nums}
 .rf-time span{position:absolute;inset:0}
 .rf-time .t-new{opacity:0;color:var(--accent-deep)}
@@ -339,7 +345,10 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
       <a href="#roadbook"><span class="zh">路书</span><span class="en">Roadbook</span></a>
       <a href="#pricing"><span class="zh">价格</span><span class="en">Pricing</span></a>
     </div>
-    <button class="btn btn-ink js-signup"><span class="zh">上线时通知我</span><span class="en">Sign up</span></button>
+    <div class="nav-right">
+      <button class="lang-btn" id="langBtn" aria-label="Switch language">EN</button>
+      <button class="btn btn-ink js-signup"><span class="zh">上线时通知我</span><span class="en">Sign up</span></button>
+    </div>
   </div>
 </nav>
 
@@ -354,8 +363,8 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
 
   <div class="days gs-hero" id="days">
     <button class="dchip on" data-sc="0"><span class="n">Day One</span><i><span class="zh">海峡出海</span><span class="en">Out on the channel</span></i></button>
-    <button class="dchip" data-sc="1"><span class="n">Day Two</span><i><span class="zh">沙漠公路</span><span class="en">The desert road</span></i></button>
-    <button class="dchip" data-sc="2"><span class="n">Day Three</span><i><span class="zh">威尼斯水巷</span><span class="en">The venice canals</span></i></button>
+    <button class="dchip" data-sc="2"><span class="n">Day Two</span><i><span class="zh">威尼斯水巷</span><span class="en">The venice canals</span></i></button>
+    <button class="dchip" data-sc="1"><span class="n">Day Three</span><i><span class="zh">沙漠公路</span><span class="en">The desert road</span></i></button>
   </div>
 
   <div class="sky-body">
@@ -381,49 +390,49 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
   <div class="wrap">
     <div class="sec-head gs-reveal">
       <span class="label">Screenshot in, places out</span>
-      <h2><span class="zh">一张截图，变成六个能用的地方</span><span class="en">One screenshot becomes seven real places</span></h2>
+      <h2><span class="zh">一张截图，变成七个能用的地方</span><span class="en">One screenshot becomes seven real places</span></h2>
       <p class="lead"><span class="zh">刷到的攻略丢进来，Plango 认出里面每一个地点——在哪、几点开门、值得待多久，都查好写好，存进你的收藏，随时排进行程。</span><span class="en">Drop in a post you saved. Plango recognizes every place in it — where it is, when it opens, how long it's worth — written up and saved, ready to slot into your trip.</span></p>
     </div>
     <div class="s2p">
-      <div class="s2p-left" id="shotProp" style="position:relative;max-width:330px;width:100%">
+      <div class="s2p-left" id="shotProp" style="position:relative;width:100%">
         <span class="sp-src"><span class="zh">你丢进来的 · 一张攻略截图</span><span class="en">What you drop in · one saved post</span></span>
         <div class="shot-prop" style="max-width:none">
         <div class="scanline" id="scanline"></div>
-        <img class="sp-img zh" src="assets/shot-xhs-la-zh.jpg" alt="洛杉矶一日路线攻略截图"><img class="sp-img en" src="assets/en-candidate-lemon8-pins.png" alt="An LA itinerary post with tagged places">
+        <img class="sp-img zh" src="assets/shot-xhs-lofoten-zh.jpg" alt="罗弗敦群岛行记攻略截图"><img class="sp-img en" src="assets/shot-ig-lofoten-en.jpg" alt="A Lofoten Islands trip post with a route map">
         </div>
       </div>
       <div class="s2p-mid">
         <span class="s2p-chip" data-chip><svg class="ic" viewBox="0 0 24 24"><use href="#i-scan"/></svg><span class="zh">识别中</span><span class="en">Reading</span></span>
-        <span class="s2p-chip" data-chip><svg class="ic" viewBox="0 0 24 24"><use href="#i-pin"/></svg><span class="zh">认出 6 个地点</span><span class="en">7 places found</span></span>
-        <span class="s2p-chip" data-chip><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg><span class="zh">6 个全部存进收藏</span><span class="en">All 7 saved to your places</span></span>
+        <span class="s2p-chip" data-chip><svg class="ic" viewBox="0 0 24 24"><use href="#i-pin"/></svg><span class="zh">认出 7 个地点</span><span class="en">7 places found</span></span>
+        <span class="s2p-chip" data-chip><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg><span class="zh">7 个全部存进收藏</span><span class="en">All 7 saved to your places</span></span>
       </div>
     </div>
     <div class="s2p-out">
-      <span class="sp-src"><span class="zh">Plango 还给你的 · 六个都成了能用的地方</span><span class="en">What you get back · six of the seven, below</span></span>
+      <span class="sp-src"><span class="zh">Plango 还给你的 · 七个里先看六个</span><span class="en">What you get back · six of the seven, below</span></span>
       <div class="poi-grid">
         <div class="poi-shot" data-poi>
-          <img class="zh" src="assets/poi-card-great-white.png" alt="Great White · Plango POI"><img class="en" src="assets/poi-card-sm-pier-en.png" alt="Santa Monica Pier · Plango POI">
-          <div class="ps-cap"><span><b><span class="zh">Great White</span><span class="en">Santa Monica Pier</span></b></span><span><span class="zh">图里 1:30 那家</span><span class="en">The carnival pier</span></span></div>
+          <img class="zh" src="assets/poi-card-lofoten-henningsvaer-zh.png" alt="Henningsvær · Plango POI"><img class="en" src="assets/poi-card-lofoten-henningsvaer-en.png" alt="Henningsvær · Plango POI">
+          <div class="ps-cap"><span><b>Henningsvær</b></span><span><span class="zh">帖里的"海上足球场"</span><span class="en">The sea-ringed pitch</span></span></div>
         </div>
         <div class="poi-shot" data-poi>
-          <img class="zh" src="assets/poi-card-abbot-kinney-blvd.png" alt="Abbot Kinney Boulevard · Plango POI"><img class="en" src="assets/poi-card-griffith-en.png" alt="Griffith Observatory · Plango POI">
-          <div class="ps-cap"><span><b><span class="zh">Abbot Kinney</span><span class="en">Griffith Observatory</span></b></span><span><span class="zh">图里 3:00 逛的街</span><span class="en">All of LA, from up top</span></span></div>
+          <img class="zh" src="assets/poi-card-lofoten-reinebringen-zh.png" alt="Reinebringen · Plango POI"><img class="en" src="assets/poi-card-lofoten-reinebringen-en.png" alt="Reinebringen · Plango POI">
+          <div class="ps-cap"><span><b>Reinebringen</b></span><span><span class="zh">帖里必打卡的登顶徒步</span><span class="en">The 1,978-step view</span></span></div>
         </div>
         <div class="poi-shot" data-poi>
-          <img class="zh" src="assets/poi-card-erewhon.png" alt="Erewhon · Plango POI"><img class="en" src="assets/poi-card-rodeo-en.png" alt="Rodeo Drive · Plango POI">
-          <div class="ps-cap"><span><b><span class="zh">Erewhon</span><span class="en">Rodeo Drive</span></b></span><span><span class="zh">图里 5:30 那家</span><span class="en">The designer stretch</span></span></div>
+          <img class="zh" src="assets/poi-card-lofoten-reine-zh.png" alt="Reine · Plango POI"><img class="en" src="assets/poi-card-lofoten-reine-en.png" alt="Reine · Plango POI">
+          <div class="ps-cap"><span><b>Reine</b></span><span><span class="zh">帖里的红色渔屋</span><span class="en">The red cabins</span></span></div>
         </div>
         <div class="poi-shot" data-poi>
-          <img class="zh" src="assets/poi-card-venice-beach.png" alt="Venice Beach · Plango POI"><img class="en" src="assets/poi-card-venice-boardwalk-en.png" alt="Venice Boardwalk · Plango POI">
-          <div class="ps-cap"><span><b><span class="zh">Venice Beach</span><span class="en">Venice Boardwalk</span></b></span><span><span class="zh">图里 6:00 那站</span><span class="en">Skaters &amp; street art</span></span></div>
+          <img class="zh" src="assets/poi-card-lofoten-hamnoya-zh.png" alt="Hamnøya · Plango POI"><img class="en" src="assets/poi-card-lofoten-hamnoy-en.png" alt="Hamnøy · Plango POI">
+          <div class="ps-cap"><span><b><span class="zh">Hamnøya</span><span class="en">Hamnøy</span></b></span><span><span class="zh">帖里的"网红桥"</span><span class="en">The postcard bridge</span></span></div>
         </div>
         <div class="poi-shot" data-poi>
-          <img class="zh" src="assets/poi-card-venice-beach-restaurant.png" alt="海边晚餐 · Plango POI"><img class="en" src="assets/poi-card-melrose-en.png" alt="Melrose Avenue · Plango POI">
-          <div class="ps-cap"><span><b><span class="zh">海边晚餐</span><span class="en">Melrose Avenue</span></b></span><span><span class="zh">图里 7:30 的晚餐</span><span class="en">The Sunday flea</span></span></div>
+          <img class="zh" src="assets/poi-card-lofoten-ramberg-zh.png" alt="Ramberg · Plango POI"><img class="en" src="assets/poi-card-lofoten-ramberg-beach-en.png" alt="Ramberg Beach · Plango POI">
+          <div class="ps-cap"><span><b><span class="zh">Ramberg</span><span class="en">Ramberg Beach</span></b></span><span><span class="zh">帖里的白沙滩</span><span class="en">The white-sand arc</span></span></div>
         </div>
         <div class="poi-shot" data-poi>
-          <img class="zh" src="assets/poi-card-abbot-kinney-bar.png" alt="Abbot Kinney 酒吧 · Plango POI"><img class="en" src="assets/poi-card-catch-la-en.png" alt="Catch LA · Plango POI">
-          <div class="ps-cap"><span><b><span class="zh">Abbot Kinney 酒吧</span><span class="en">Catch LA</span></b></span><span><span class="zh">图里 9:00 收尾那杯</span><span class="en">The celebrity table</span></span></div>
+          <img class="zh" src="assets/poi-card-lofoten-reinehalden-zh.png" alt="Reinehalden · Plango POI"><img class="en" src="assets/poi-card-lofoten-kvalvika-beach-en.png" alt="Kvalvika Beach · Plango POI">
+          <div class="ps-cap"><span><b><span class="zh">Reinehalden</span><span class="en">Kvalvika Beach</span></b></span><span><span class="zh">帖里停车的门道</span><span class="en">The hike-in beach</span></span></div>
         </div>
       </div>
     </div>
@@ -435,58 +444,79 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
     <div class="copy gs-reveal">
       <span class="label">Walked through for you</span>
       <h2><span class="zh">你想到的，排好了；<br>你没想到的，也想到了</span><span class="en">What you thought of, planned.<br>What you didn't, covered.</span></h2>
-      <p class="lead"><span class="zh">Plango 先替你把这趟旅行走了一遍：取车怎么走、渡轮几点开、哪段要留缓冲、空档去哪——都查好，排进当天。</span><span class="en">Plango walks your trip before you do: the rental-car leg, the ferry times, the buffers that matter, the gap worth filling — checked, and placed into the day.</span></p>
+      <p class="lead"><span class="zh">Plango 先替你把这趟旅行走了一遍：取车怎么走、哪里能停车、哪段在修路、空档去哪——都查好，排进当天。</span><span class="en">Plango walks your trip before you do: the rental-car leg, where to park, the roadwork to route around, the gap worth filling — checked, and placed into the day.</span></p>
       <div class="facts">
-        <div class="fact"><span class="fn">LAX →</span><div><div class="ft"><span class="zh">落地就接上</span><span class="en">Picked up at the curb</span></div><div class="fs"><span class="zh">航班几点到、取车点怎么走、几点该出发去码头——中间的每一段，自动补齐。</span><span class="en">When you land, how to reach the rental desk, when to leave for the pier — every leg in between, filled in.</span></div></div></div>
-        <div class="fact"><span class="fn">09:15</span><div><div class="ft"><span class="zh">班次是核对过的</span><span class="en">Timetables, verified</span></div><div class="fs"><span class="zh">渡轮、末班船、营业时间——写进日历之前，先核对现实。</span><span class="en">Ferries, last boats, opening hours — checked against reality before they're written down.</span></div></div></div>
-        <div class="fact"><span class="fn">45 min</span><div><div class="ft"><span class="zh">空档不浪费</span><span class="en">Gaps, put to use</span></div><div class="fs"><span class="zh">按你的去回时间，空出来的三刻钟，补上就在码头边的那个推荐。</span><span class="en">The spare forty-five minutes gets the recommendation that's right by the dock.</span></div></div></div>
+        <div class="fact"><span class="fn">EVE →</span><div><div class="ft"><span class="zh">落地就接上</span><span class="en">Picked up at the curb</span></div><div class="fs"><span class="zh">航班几点到 Evenes、取车点怎么走、几点该上 E10——中间的每一段，自动补齐。</span><span class="en">When you land at Evenes, how to reach the rental desk, when to hit the E10 — every leg in between, filled in.</span></div></div></div>
+        <div class="fact"><span class="fn">09:15</span><div><div class="ft"><span class="zh">时点是核对过的</span><span class="en">Timings, verified</span></div><div class="fs"><span class="zh">停车场、末班巴士、营业时间——写进日历之前，先核对现实。</span><span class="en">Parking, last buses, opening hours — checked against reality before they're written down.</span></div></div></div>
+        <div class="fact"><span class="fn">40 min</span><div><div class="ft"><span class="zh">空档不浪费</span><span class="en">Gaps, put to use</span></div><div class="fs"><span class="zh">按你的动线，空出来的四十分钟，补上就在 E10 路边的那座桥。</span><span class="en">The spare forty minutes gets the bridge that's right off the E10.</span></div></div></div>
       </div>
     </div>
     <div class="visual gs-reveal">
+      <div class="plan-stack">
+      <div class="reflow slim" id="day1">
+        <div class="rf-head">
+          <span class="rt-l"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cal"/></svg><span><span class="zh">Day 1 · 落地与横穿</span><span class="en">Day 1 · The drive in</span></span></span>
+        </div>
+        <div class="wk-row added">
+          <span class="wt">14:20</span>
+          <div class="wk-bd"><div class="rn"><span class="zh">落地 Evenes（EVE）</span><span class="en">Land at Evenes (EVE)</span></div><div class="rsub"><span class="zh">出到达层直走就是租车柜台</span><span class="en">Straight through arrivals to the rental desk</span></div></div>
+          <span class="wk-tag"><span class="zh">替你想到的</span><span class="en">Plango added</span></span>
+        </div>
+        <div class="wk-row added">
+          <span class="wt">15:00</span>
+          <div class="wk-bd"><div class="rn"><span class="zh">取车 · 上 E10 向西</span><span class="en">Pick up the car · E10 westbound</span></div><div class="rsub"><span class="zh">车程近 5 小时，沿途加油点已标好</span><span class="en">Close to a 5-hour drive — fuel stops marked</span></div></div>
+          <span class="wk-tag"><span class="zh">替你想到的</span><span class="en">Plango added</span></span>
+        </div>
+        <div class="wk-row added">
+          <span class="wt">19:45</span>
+          <div class="wk-bd"><div class="rn"><span class="zh">到 Reine · 入住</span><span class="en">Reine · check in</span></div><div class="rsub"><span class="zh">今晚住这——明天的起点就在镇上</span><span class="en">Tonight's stay — tomorrow starts right here</span></div></div>
+          <span class="wk-tag"><span class="zh">替你想到的</span><span class="en">Plango added</span></span>
+        </div>
+      </div>
       <div class="reflow" id="walk">
         <div class="rf-head">
-          <span class="rt-l"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cal"/></svg><span>Day 2 · Catalina</span></span>
+          <span class="rt-l"><svg class="ic" viewBox="0 0 24 24"><use href="#i-cal"/></svg><span><span class="zh">Day 2 · 罗弗敦</span><span class="en">Day 2 · Lofoten</span></span></span>
           <span class="rf-badge"><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg><span class="zh">计划成立</span><span class="en">Plan holds</span></span>
         </div>
         <div class="wk-row added">
           <span class="wt">08:30</span>
-          <div class="wk-bd"><div class="rn"><span class="zh">酒店出发 → Long Beach 码头</span><span class="en">Hotel → the Long Beach pier</span></div><div class="rsub"><span class="zh">车程 18 分钟，已留出登船缓冲</span><span class="en">18-min drive, boarding buffer included</span></div></div>
-          <span class="wk-tag"><span class="zh">替你想到的</span><span class="en">Plango added</span></span>
-        </div>
-        <div class="wk-row added">
-          <span class="wt">09:15</span>
-          <div class="wk-bd"><div class="rn"><span class="zh">渡轮 Long Beach → Avalon</span><span class="en">Ferry Long Beach → Avalon</span></div><div class="rsub"><span class="zh">班次已核对 · 1h05m</span><span class="en">Times verified · 1h05m</span></div></div>
+          <div class="wk-bd"><div class="rn"><span class="zh">酒店出发 → Reine 镇停车</span><span class="en">Hotel → parking in Reine</span></div><div class="rsub"><span class="zh">徒步起点没有停车场——停 Reine，步行 1.5 公里</span><span class="en">No lot at the trailhead — park in Reine, walk 1.5 km</span></div></div>
           <span class="wk-tag"><span class="zh">替你想到的</span><span class="en">Plango added</span></span>
         </div>
         <div class="wk-row given">
-          <span class="wt">11:05</span>
-          <div class="wk-bd"><div class="rn"><span class="zh">半潜艇看鱼群</span><span class="en">Semi-sub over the kelp</span></div><div class="rsub"><span class="zh">来自你的收藏</span><span class="en">From your saved places</span></div></div>
+          <span class="wt">09:15</span>
+          <div class="wk-bd"><div class="rn"><span class="zh">Reinebringen 登顶</span><span class="en">The Reinebringen climb</span></div><div class="rsub"><span class="zh">来自你的收藏 · 1,978 级石阶</span><span class="en">From your saved places · 1,978 steps</span></div></div>
         </div>
         <div class="wk-row given">
           <span class="wt">12:05</span>
-          <div class="wk-bd"><div class="rn"><span class="zh">Pier 24 · 码头午餐</span><span class="en">Pier 24 · dockside lunch</span></div><div class="rsub"><span class="zh">来自你的收藏</span><span class="en">From your saved places</span></div></div>
+          <div class="wk-bd"><div class="rn"><span class="zh">Reine 红渔屋午餐</span><span class="en">Lunch by the red cabins, Reine</span></div><div class="rsub"><span class="zh">来自你的收藏</span><span class="en">From your saved places</span></div></div>
         </div>
         <div class="wk-row added">
           <span class="wt">13:30</span>
-          <div class="wk-bd"><div class="rn"><span class="zh">空档 45 分钟 → Descanso Beach</span><span class="en">45-min gap → Descanso Beach</span></div><div class="rsub"><span class="zh">就在码头边，顺路</span><span class="en">Right by the dock, on your way</span></div></div>
+          <div class="wk-bd"><div class="rn"><span class="zh">空档 40 分钟 → Hamnøya 网红桥</span><span class="en">40-min gap → the Hamnøy bridge</span></div><div class="rsub"><span class="zh">你收藏的桥，正好塞进这段空档——就在 E10 路边</span><span class="en">Your saved bridge, slotted into the gap — right off the E10</span></div></div>
+          <span class="wk-tag"><span class="zh">替你想到的</span><span class="en">Plango added</span></span>
+        </div>
+        <div class="wk-row given">
+          <span class="wt">15:30</span>
+          <div class="wk-bd"><div class="rn"><span class="zh">Henningsvær · 海上足球场</span><span class="en">Henningsvær &amp; the sea-ringed pitch</span></div><div class="rsub"><span class="zh">来自你的收藏 · E10 车程 1h15m 已排进</span><span class="en">From your saved places · the 1h15m drive is in</span></div></div>
+        </div>
+        <div class="wk-row added">
+          <span class="wt"><span class="rf-time"><span class="t-old">17:40</span><span class="t-new">18:30</span></span></span>
+          <div class="wk-bd"><div class="rn"><span class="zh">Ramberg 白沙滩 · 晚照</span><span class="en">Ramberg Beach · the light hour</span></div><div class="rsub"><span class="zh">你收藏的海滩，时段对准晚照——回程顺路</span><span class="en">Your saved beach, timed to the evening light — on the way back</span></div></div>
           <span class="wk-tag"><span class="zh">替你想到的</span><span class="en">Plango added</span></span>
         </div>
         <div class="wk-row added">
-          <span class="wt"><span class="rf-time"><span class="t-old">16:45</span><span class="t-new">17:25</span></span></span>
-          <div class="wk-bd"><div class="rn"><span class="zh">回程渡轮</span><span class="en">Return ferry</span></div><div class="rsub"><span class="zh">末班前留足缓冲</span><span class="en">Buffer before the last boat</span></div></div>
-          <span class="wk-tag"><span class="zh">替你想到的</span><span class="en">Plango added</span></span>
-        </div>
-        <div class="wk-row added">
-          <span class="wt"><span class="rf-time"><span class="t-old">18:20</span><span class="t-new">19:00</span></span></span>
-          <div class="wk-bd"><div class="rn"><span class="zh">回到酒店</span><span class="en">Back at your stay</span></div><div class="rsub"><span class="zh">到港后的最后一段，也排好了</span><span class="en">The last leg home, placed too</span></div></div>
+          <span class="wt"><span class="rf-time"><span class="t-old">20:10</span><span class="t-new">21:00</span></span></span>
+          <div class="wk-bd"><div class="rn"><span class="zh">回到酒店</span><span class="en">Back at your stay</span></div><div class="rsub"><span class="zh">回程 E10 车程，也排好了</span><span class="en">The E10 drive home, placed too</span></div></div>
           <span class="wk-tag"><span class="zh">替你想到的</span><span class="en">Plango added</span></span>
         </div>
         <div class="rf-alert" id="rfAlert">
           <svg class="ic" viewBox="0 0 24 24"><use href="#i-bell"/></svg>
-          <span class="zh">渡轮改点</span><span class="en">Ferry rescheduled</span>
-          <span class="rr">16:45 → 17:25</span>
+          <span class="zh">E10 修路 · 后段顺延</span><span class="en">Roadwork on the E10</span>
+          <span class="rr">17:40 → 18:30</span>
         </div>
         <div class="rf-done" id="rfDone"><i><svg class="ic" viewBox="0 0 24 24"><use href="#i-check"/></svg><span class="zh">已重排 · 没有一站被丢掉</span><span class="en">Reflowed · nothing dropped</span></i></div>
+      </div>
       </div>
     </div>
   </div>
@@ -498,10 +528,10 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
       <span class="label">Booking, done for you</span>
       <h2><span class="zh">该订的，替你办了</span><span class="en">The booking, handled</span></h2>
       <p class="lead"><span class="zh">行程排好，该订的排成一条队列：能直接订的直接订好；不能直接订的，日期人数替你填好，只剩确认。</span><span class="en">Once the days are set, every booking lines up in one queue: what can be booked outright gets booked; the rest arrives pre-filled, one confirm away.</span></p>
-      <div class="facts">
-        <div class="fact"><span class="fn">7 →</span><div><div class="ft"><span class="zh">排成一条队列，顺着办完</span><span class="en">One queue, worked through</span></div><div class="fs"><span class="zh">先渡轮、后住宿、再餐厅——办完一件，自动端上下一件。</span><span class="en">Ferry, stay, tables — in the right order; finish one, the next is served.</span></div></div></div>
-        <div class="fact"><span class="fn">0</span><div><div class="ft"><span class="zh">要你动手的，接近零</span><span class="en">Your part: almost nothing</span></div><div class="fs"><span class="zh">要打电话的，连号码、日期、人数和该说的话都替你写好，照着念。</span><span class="en">Even phone-only places come with the number, the dates, and the exact words to say.</span></div></div></div>
-        <div class="fact"><span class="fn">6/29</span><div><div class="ft"><span class="zh">放位当天，到点提醒</span><span class="en">Pinged the day seats open</span></div><div class="fs"><span class="zh">窗口还没开的难订位子，替你盯着日历，到点叫你。</span><span class="en">Hard tables that aren't open yet — the calendar is watched for you.</span></div></div></div>
+      <div class="facts plain">
+        <div class="fact"><div><div class="ft"><span class="zh">排成一条队列，顺着办完</span><span class="en">One queue, worked through</span></div><div class="fs"><span class="zh">先渡轮、后住宿、再餐厅——办完一件，自动端上下一件。</span><span class="en">Ferry, stay, tables — in the right order; finish one, the next is served.</span></div></div></div>
+        <div class="fact"><div><div class="ft"><span class="zh">要你动手的，接近零</span><span class="en">Your part: almost nothing</span></div><div class="fs"><span class="zh">要打电话的，连号码、日期、人数和该说的话都替你写好，照着念。</span><span class="en">Even phone-only places come with the number, the dates, and the exact words to say.</span></div></div></div>
+        <div class="fact"><div><div class="ft"><span class="zh">放位当天，到点提醒</span><span class="en">Pinged the day seats open</span></div><div class="fs"><span class="zh">窗口还没开的难订位子，替你盯着日历，到点叫你。</span><span class="en">Hard tables that aren't open yet — the calendar is watched for you.</span></div></div></div>
       </div>
     </div>
     <div class="visual gs-reveal">
@@ -520,17 +550,13 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
     <div class="rb-track-clip">
       <div class="rb-track" id="rbTrack">
         <div class="rb-panel page">
-          <span class="sk">Chapter 2 · Catalina</span>
-          <h4>Fourteen Bison and a Hat Rack</h4>
-          <p>The ferry pulls away from the mainland and the haze of Long Beach thins behind you.</p>
-          <p>Avalon harbor curves around you like cupped hands. The town is stacked against the hillside, and the Casino stands at the harbor's northern tip, round and white.</p>
-          <span class="pg"><span>Plango Roadbook</span><span>P. 27</span></span>
+          <span class="sk"><span class="zh">第二章 · 卡塔利娜</span><span class="en">Chapter 2 · Catalina</span></span>
+          <h4><span class="zh">十四头野牛的下落</span><span class="en">Abandoned Extras and a Casino That Never Gambled</span></h4>
+          <p><span class="zh">沿纪念碑旁的山路继续往内陆走，草坡上偶尔能看见一种不该出现在太平洋岛屿上的东西：美洲野牛。它们的曾祖辈是一九二四年好莱坞剧组拍西部片《消失的美国人》时运上岛的道具——十四头活牛。拍完之后，剧组算了算运费，决定不运了。</span><span class="en">Then there are the bison. Fourteen American bison were shipped to the island in 1924 for a silent Western called The Vanishing American. When the shoot wrapped, the studio did the math on ferrying fourteen large animals back across the channel, decided it was not worth the freight bill, and simply left them.</span></p>
+          <p><span class="zh">十四头牛就这么被留在了一座离大陆四十公里的岛上，像一群被辞退后找不到回家路的临时演员。一百年过去，它们繁衍到了一百五十头左右，如今受法律保护，比岛上大多数人类居民的资历都老。</span><span class="en">The bison did not vanish. They multiplied. They are the island's most photographed residents — abandoned extras who outlasted the movie, the studio, and most of the audience that might have watched it.</span></p>
+          <span class="pg"><span><span class="zh">Plango 路书</span><span class="en">Plango Roadbook</span></span><span>P. 27</span></span>
         </div>
         <div class="rb-panel"><img src="assets/a2-avalon-cove.jpg" alt="Avalon 港湾清晨"><span class="cap">Avalon, 7:40 AM</span></div>
-        <div class="rb-panel quote">
-          <p><span class="zh">“出发前的晚上读完它，你会觉得自己已经去过一次了。”</span><span class="en">“Read it the night before, and you'll feel like you've already been.”</span></p>
-          <span class="src"><span class="zh">Plango 路书 · Catalina 章节</span><span class="en">Plango Roadbook · the Catalina chapter</span></span>
-        </div>
         <div class="rb-panel"><img src="assets/a3-pier-dusk.jpg" alt="码头黄昏"><span class="cap">Santa Monica, dusk</span></div>
         <div class="rb-panel"><img src="assets/a1-pch-curve.jpg" alt="海岸公路"><span class="cap">PCH, golden hour</span></div>
       </div>
@@ -603,7 +629,6 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
   </div>
   <div class="bar f-bot">
     <div class="fl">© 2026 F.I.R.E holding · <span class="zh">Plango 是 F.I.R.E holding 旗下产品</span><span class="en">Plango is a product of F.I.R.E holding</span></div>
-    <button class="lang-btn" id="langBtn" aria-label="Switch language">EN</button>
     <div class="cat"><span class="zh">品控官刘心心已审阅</span><span class="en">QA'd by Liu Xinxin</span><img src="assets/cat-stamp.png" alt="刘心心"></div>
   </div>
 </footer>
@@ -617,7 +642,11 @@ const langBtn=document.getElementById('langBtn');
 function setLang(l){document.documentElement.dataset.lang=l;document.documentElement.lang=l;
   langBtn.textContent=l==='zh'?'EN':'中文';try{localStorage.setItem('plango-lang',l)}catch(e){}
   if(window.ScrollTrigger)ScrollTrigger.refresh()}
-let saved='zh';try{saved=localStorage.getItem('plango-lang')||'zh'}catch(e){}
+let saved='zh';
+try{
+  const q=new URLSearchParams(location.search).get('lang');
+  saved=(q==='en'||q==='zh')?q:(localStorage.getItem('plango-lang')||'zh');
+}catch(e){}
 setLang(saved);
 langBtn.addEventListener('click',()=>setLang(document.documentElement.dataset.lang==='zh'?'en':'zh'));
 
@@ -677,7 +706,7 @@ mm.add({desktop:"(min-width: 881px)",mobile:"(max-width: 880px)",reduce:"(prefer
   ];
   const veh=document.getElementById('veh'),vehImg=document.getElementById('vehImg');
   const bgA=document.getElementById('bgA'),bgB=document.getElementById('bgB');
-  const chips=gsap.utils.toArray('.dchip');
+  const chips=gsap.utils.toArray('.dchip').sort((a,b)=>+a.dataset.sc-+b.dataset.sc); /* 数组序=场景序（DOM 序=Day 展示序，两者解耦） */
   let scur=0,run=null,bob=null,vActive=true;
   function startRun(sc){
     if(run)run.kill(); if(bob)bob.kill();
@@ -710,11 +739,11 @@ mm.add({desktop:"(min-width: 881px)",mobile:"(max-width: 880px)",reduce:"(prefer
   const VDIR='assets/video/tapnow-loop/web-1440/'; /* 生产版 1440p H.264（4K 评审版在 web-4k/，720p 母片在上级目录） */
   const LOOP=[
     {src:'desert-video-v2.mp4',chip:1},
-    {src:'transition-desert-harbor.mp4',chip:0},
+    {src:'transition-desert-harbor-v2.mp4',chip:0},
     {src:'harbor-video-v4.mp4',chip:0},
-    {src:'transition-harbor-venice.mp4',chip:2},
+    {src:'transition-harbor-venice-v2.mp4',chip:2},
     {src:'venice-video-v4.mp4',chip:2},
-    {src:'transition-venice-desert.mp4',chip:1}
+    {src:'transition-venice-desert-v2.mp4',chip:1}
   ];
   const ENTRY=[2,0,4];                       /* chip → 该场景主片在 LOOP 中的位置 */
   const vA=document.getElementById('vidA'),vB=document.getElementById('vidB');
@@ -814,22 +843,42 @@ mm.add({desktop:"(min-width: 881px)",mobile:"(max-width: 880px)",reduce:"(prefer
     });
   });
 
-  /* 替你先走一遍：你给的站先落，Plango 补的织入；随后现实变卦 → 自动重排 */
+  /* 替你先走一遍（HP-68c 魔术盒子·真卡版）：往下滑 → ②段六张**整卡**（图+文字）
+     在视野里完整地缩小，一张接一张坠向日历卡被吸收，行程点逐个成形，Plango 补的行织入。
+     scrub 跟手可倒放（倒滑时卡片飞回网格原位）；行落定后永不消失。 */
   gsap.set('.rf-time .t-old',{yPercent:0,autoAlpha:1});
   gsap.set('.rf-time .t-new',{yPercent:100,autoAlpha:0});
+  const collCards=gsap.utils.toArray('.poi-shot').slice(0,6);
+  collCards.forEach(c=>{c.style.position='relative';c.style.zIndex='30';c.style.willChange='transform'});
+  const dRect=el=>{const r=el.getBoundingClientRect();return{x:r.left+window.scrollX,y:r.top+window.scrollY,w:r.width,h:r.height}};
+  const tgt=()=>{const r=dRect(document.getElementById('walk'));return{x:r.x+r.w/2,y:r.y+96}};
+  const drop=gsap.timeline({
+    scrollTrigger:{trigger:'#walk',start:"top bottom",end:"top 22%",scrub:0.6,invalidateOnRefresh:true}
+  });
+  collCards.forEach((c,k)=>{
+    const pos=k*0.12;
+    drop.to(c,{x:()=>{const r=dRect(c);return tgt().x-(r.x+r.w/2)},duration:0.9,ease:"power1.inOut"},pos)   /* 横向向卡中心收拢 */
+        .to(c,{y:()=>{const r=dRect(c);return tgt().y-(r.y+r.h*0.08)},duration:0.9,ease:"power2.in"},pos)     /* 纵向加速坠向日历卡 */
+        .to(c,{scale:0.09,duration:0.9,ease:"power2.in",transformOrigin:"center top"},pos)                     /* 整卡完整缩小 */
+        .to(c,{autoAlpha:0,duration:0.08,ease:"power1.in"},pos+0.84)                                           /* 被吸收 */
+        .fromTo('#walk',{scale:1},{scale:1.012,duration:0.05,yoyo:true,repeat:1,ease:"power1.out"},pos+0.86);  /* 吸收脉冲 */
+  });
+  drop.fromTo('#day1 .wk-row',{autoAlpha:0,x:-26},{autoAlpha:1,x:0,duration:0.35,stagger:0.16,ease:"power3.out"},0)  /* Day 1 交通日先补齐（落地就接上） */
+      .fromTo('#walk .wk-row.given',{autoAlpha:0,scale:0.9,y:12},{autoAlpha:1,scale:1,y:0,duration:0.3,stagger:0.2,ease:"back.out(2)"},1.0)
+      .fromTo('#walk .wk-row.added',{autoAlpha:0,x:-26},{autoAlpha:1,x:0,duration:0.5,stagger:0.28,ease:"power3.out"},1.5)
+      .from('.wk-tag',{scale:0,duration:0.35,stagger:0.14,ease:"back.out(2)"},1.75);
+  /* 现实变卦 → 自动重排：日历成形后的循环尾拍（只动 alert/时刻/badge，行不再隐藏） */
   const rf=gsap.timeline({repeat:-1,repeatDelay:3.4,paused:true});
-  rf.from('.wk-row.given',{y:18,autoAlpha:0,duration:0.5,stagger:0.2,ease:"power3.out"})
-    .from('.wk-row.added',{x:-26,autoAlpha:0,duration:0.55,stagger:0.26,ease:"power3.out"},"+=0.4")
-    .from('#rfAlert',{y:-14,autoAlpha:0,duration:0.5,ease:"back.out(1.6)"},"+=1.3")
+  rf.fromTo('#rfAlert',{y:-14,autoAlpha:0},{y:0,autoAlpha:1,duration:0.5,ease:"back.out(1.6)"},"+=0.4")
     .to('.rf-time .t-old',{yPercent:-100,autoAlpha:0,duration:0.45,ease:"power2.inOut"},"+=0.6")
     .to('.rf-time .t-new',{yPercent:0,autoAlpha:1,duration:0.45,ease:"power2.inOut"},"<")
     .fromTo('#rfDone',{autoAlpha:0,y:10},{autoAlpha:1,y:0,duration:0.5,ease:"back.out(1.6)"},"+=0.2")
     .to({},{duration:2.6})
     .to('#rfDone,#rfAlert',{autoAlpha:0,duration:0.4})
     .to('.rf-time .t-new',{yPercent:100,autoAlpha:0,duration:0.35},"<")
-    .to('.rf-time .t-old',{yPercent:0,autoAlpha:1,duration:0.35},"<")
-    .to('.wk-row',{autoAlpha:0,duration:0.4},"-=0.1");
-  ScrollTrigger.create({trigger:'#walk',start:"top 78%",onToggle:self=>self.isActive?rf.play():rf.pause()});
+    .to('.rf-time .t-old',{yPercent:0,autoAlpha:1,duration:0.35},"<");
+  gsap.set('#rfAlert',{autoAlpha:0});
+  ScrollTrigger.create({trigger:'#walk',start:"top 45%",onToggle:self=>self.isActive?rf.play():rf.pause()});
 
   /* 路书横向画廊 */
   const track=document.getElementById('rbTrack');
