@@ -805,14 +805,26 @@ mm.add({desktop:"(min-width: 881px)",mobile:"(max-width: 880px)",reduce:"(prefer
     v.addEventListener('error',vFail);
   });
   vLoad(vA,vIdx);vLoad(vB,(vIdx+1)%LOOP.length);
-  /* autoplay 被拒 ≠ 死亡：微信等内嵌浏览器要等 WeixinJSBridgeReady 或首次触摸才放行 play()。
+  /* autoplay 被拒 ≠ 死亡：微信内嵌浏览器需要在 bridge 回调或首次触摸中放行 play()。
+     bridge 可能在本脚本运行前就已 ready，所以不能只等 WeixinJSBridgeReady 事件。
      被拒时静帧兜底继续跑，挂多个"唤醒点"重试；只有 <video> 真报 error 才判死（vFail）。 */
   function vWake(){
     if(videoOk||videoDead)return;
     vA.play().catch(()=>{});
   }
+  function vWakeThroughWeixinBridge(){
+    const bridge=window.WeixinJSBridge;
+    if(bridge&&typeof bridge.invoke==='function'){
+      try{bridge.invoke('getNetworkType',{},vWake);return}catch(_){/* fall through */}
+    }
+    vWake();
+  }
+  function vArmWeixinBridge(){
+    if(window.WeixinJSBridge){vWakeThroughWeixinBridge();return}
+    document.addEventListener('WeixinJSBridgeReady',vWakeThroughWeixinBridge,{once:true});
+  }
   vA.play().catch(()=>{
-    document.addEventListener('WeixinJSBridgeReady',vWake,false);
+    vArmWeixinBridge();
     ['touchstart','click','scroll'].forEach(ev=>addEventListener(ev,vWake,{once:true,passive:true}));
     setTimeout(vWake,1500);
   });
