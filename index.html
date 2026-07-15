@@ -356,8 +356,8 @@ footer .cat:hover img{transform:rotate(-10deg) scale(1.12)}
 <header class="hero" id="heroS">
   <div class="sky-fallback"></div>
   <div class="sky-bg"><img id="bgA" src="assets/mini-harbor.jpg" alt="" onerror="this.style.display='none'"><img id="bgB" alt="" style="position:absolute;inset:0;opacity:0">
-    <video id="vidA" muted playsinline preload="auto" aria-hidden="true"></video>
-    <video id="vidB" muted playsinline preload="auto" aria-hidden="true"></video>
+    <video id="vidA" muted playsinline webkit-playsinline x5-playsinline preload="auto" aria-hidden="true"></video>
+    <video id="vidB" muted playsinline webkit-playsinline x5-playsinline preload="auto" aria-hidden="true"></video>
   </div>
   <div class="veh" id="veh" aria-hidden="true"><img id="vehImg" src="assets/msprite-ferry.png" alt="" onerror="this.parentElement.style.display='none'"></div>
   <div class="sky-vig"></div>
@@ -805,7 +805,17 @@ mm.add({desktop:"(min-width: 881px)",mobile:"(max-width: 880px)",reduce:"(prefer
     v.addEventListener('error',vFail);
   });
   vLoad(vA,vIdx);vLoad(vB,(vIdx+1)%LOOP.length);
-  vA.play().catch(vFail);                    /* autoplay 被拒同样回兜底 */
+  /* autoplay 被拒 ≠ 死亡：微信等内嵌浏览器要等 WeixinJSBridgeReady 或首次触摸才放行 play()。
+     被拒时静帧兜底继续跑，挂多个"唤醒点"重试；只有 <video> 真报 error 才判死（vFail）。 */
+  function vWake(){
+    if(videoOk||videoDead)return;
+    vA.play().catch(()=>{});
+  }
+  vA.play().catch(()=>{
+    document.addEventListener('WeixinJSBridgeReady',vWake,false);
+    ['touchstart','click','scroll'].forEach(ev=>addEventListener(ev,vWake,{once:true,passive:true}));
+    setTimeout(vWake,1500);
+  });
 
   chips.forEach(c=>c.addEventListener('click',()=>{
     const i=+c.dataset.sc;
